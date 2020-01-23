@@ -1,0 +1,30 @@
+{% extends 'temel.html' %}
+
+{% block sayfaicerigi %}
+    <!-- Page Heading -->
+    <h1 class="h3 mb-4 text-gray-800">{{ sayfa_baslik }}</h1>
+
+    <form method="post">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.dersKodu.label }}
+            {{ form.dersKodu(class='form-control') }}
+        </div>
+        <div class="form-group">
+            {{ form.dersAdi.label }}
+            {{ form.dersAdi(class='form-control') }}
+        </div>
+        <div class="form-group">
+            {{ form.kredi.label }}
+            {{ form.kredi(class='form-control') }}
+        </div>
+        <div class="form-group">
+            {{ form.ogretimGorevlisi.label }}
+            {{ form.ogretimGorevlisi(class='form-control') }}
+        </div>
+        {{ form.kaydet(class="btn btn-success") }}
+    </form>
+
+{% endblock %}
+
+{% block title %}{{ sayfa_baslik }}{% endblock %}

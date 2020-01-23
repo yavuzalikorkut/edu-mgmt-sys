@@ -1,0 +1,111 @@
+{% extends 'temel.html' %}
+
+{% block sayfaicerigi %}
+    <!-- Page Heading -->
+    <h1 class="h3 mb-4 text-gray-800">Ders Listesi</h1>
+
+    <table class="table table-hover ders-listesi">
+        <thead>
+        <tr>
+            <th>Ders Kodu</th>
+            <th>Ders Adı</th>
+            <th>Kredi</th>
+            <th>Öğretim Görevlisi</th>
+            <th>İşlemler</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for ders in veri %}
+            <tr>
+                <td>{{ ders.dersKodu }}</td>
+                <td>{{ ders.dersAdi }}</td>
+                <td>{{ ders.kredi }}</td>
+                <td>{{ ders.ogretimGorevlisi }}</td>
+                <td>
+                    <a href="{{ url_for('ders.dersDuzenle', id=ders.id) }}" class="btn btn-primary">Düzenle</a>
+                    <a href="#" class="btn btn-danger silme-butonu"
+                       data-derskodu="{{ ders.dersKodu }}"
+                       data-dersadi="{{ ders.dersAdi }}"
+                       data-dersid="{{ ders.id }}">Sil</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        <a href="{{ url_for("ders.dersEkle") }}" class="btn btn-success">Yeni Ders Ekle</a>
+    </div>
+    <div class="align-content-center">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="{{ ilkSayfa['link'] }}">İlk Sayfa</a></li>
+            <li class="page-item"><a class="page-link" href="{{ oncekiSayfa['link'] }}">Önceki Sayfa</a></li>
+            <li class="page-item"><a class="page-link" href="{{ sonrakiSayfa['link'] }}">Sonraki Sayfa</a></li>
+            <li class="page-item"><a class="page-link" href="{{ sonSayfa['link'] }}">Son Sayfa</a></li>
+        </ul>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="silmeOnayi" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ders Silme Onayı</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="silmeMesaj">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                    <button type="button" class="btn btn-danger" id="btn-sil">Sil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block title %}BYS Ders Listesi{% endblock %}
+
+
+{% block bodysonu %}
+    <script language="JavaScript">
+        $(document).ready(function () {
+
+            $("a.silme-butonu").on("click", function () {
+                // Silme butonlarına tıklanıldığında çalışacak kodlar
+                var tiklananButon = $(this);
+
+                var dersKodu = tiklananButon.data("derskodu");
+                var dersAdi = tiklananButon.data("dersadi");
+                var dersId = tiklananButon.data("dersid");
+
+                $("#silmeMesaj").html(dersKodu + " kodlu " + dersAdi + " isimli dersi silmek " +
+                    "istediğinize emin misiniz?");
+
+                $("#btn-sil").off("click");
+                $("#btn-sil").on("click", function () {
+                    $("#silmeOnayi").modal('hide');
+
+                    $.post("{{ url_for('ders.dersSil') }}",
+                        {
+                            id: dersId,
+                            csrf_token: '{{ csrf_token() }}'
+                        },
+                        function (sonuc, htmlkodu) {
+                            if(sonuc["sonuc"] === "TAMAM") {
+                                location.reload();
+                            } else {
+                                alert("Hata")
+                            }
+                        });
+                });
+
+                $("#silmeOnayi").modal();
+            });
+
+        });
+    </script>
+{% endblock %}
